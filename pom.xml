@@ -15,31 +15,8 @@
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
-		<start-class>com.testmonkeys.demo.DemoApplication</start-class>
-		<spring.version>4.3.4.RELEASE</spring.version>
-		<httpclient.version>4.5.2</httpclient.version>
-		<spring-data-dynamodb.version>4.4.1</spring-data-dynamodb.version>
-		<aws-java-sdk-dynamodb.version>1.11.64</aws-java-sdk-dynamodb.version>
-		<bootstrap.version>3.3.7-1</bootstrap.version>
-		<sqlite4java.version>1.0.392</sqlite4java.version>
-		<dynamodb.version>1.11.106</dynamodb.version>
-		<dynamodblocal.version>1.11.86</dynamodblocal.version>
 		<java.version>1.8</java.version>
-		<dynamodblocal.repository.url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</dynamodblocal.repository.url>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Hopper-SR10</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,212 +24,28 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.dropwizard.metrics</groupId>
-			<artifactId>metrics-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>${bootstrap.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-dynamodb</artifactId>
-			<version>${aws-java-sdk-dynamodb.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>com.github.derjust</groupId>
-			<artifactId>spring-data-dynamodb</artifactId>
-			<version>${spring-data-dynamodb.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<!-- ================================================== -->
-		<!-- DynamoDBLocal dependencies -->
-		<!-- ================================================== -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>DynamoDBLocal</artifactId>
-			<version>${dynamodblocal.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java</artifactId>
-			<version>${sqlite4java.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java-win32-x86</artifactId>
-			<version>${sqlite4java.version}</version>
-			<type>dll</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java-win32-x64</artifactId>
-			<version>${sqlite4java.version}</version>
-			<type>dll</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-osx</artifactId>
-			<version>${sqlite4java.version}</version>
-			<type>dylib</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-linux-i386</artifactId>
-			<version>${sqlite4java.version}</version>
-			<type>so</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-linux-amd64</artifactId>
-			<version>${sqlite4java.version}</version>
-			<type>so</type>
-			<scope>test</scope>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.5</version>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-test</artifactId>
-			<version>2.1.4.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>5.1.6.RELEASE</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java</artifactId>
-			<version>1.0.392</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java-win32-x86</artifactId>
-			<version>1.0.392</version>
-			<type>dll</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>sqlite4java-win32-x64</artifactId>
-			<version>1.0.392</version>
-			<type>dll</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-osx</artifactId>
-			<version>1.0.392</version>
-			<type>dylib</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-linux-i386</artifactId>
-			<version>1.0.392</version>
-			<type>so</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.almworks.sqlite4java</groupId>
-			<artifactId>libsqlite4java-linux-amd64</artifactId>
-			<version>1.0.392</version>
-			<type>so</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>DynamoDBLocal</artifactId>
-			<version>1.11.86</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>dynamodb-local</id>
-			<name>DynamoDB Local Release Repository</name>
-			<url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
-		</repository>
-	</repositories>
-
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.10</version>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeScope>test</includeScope>
-							<includeTypes>so,dll,dylib</includeTypes>
-							<outputDirectory>${project.basedir}/native-libs</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

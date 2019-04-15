@@ -1,7 +1,9 @@
 package com.testmonkeys.demo.service;
 
 import com.google.gson.Gson;
-import com.testmonkeys.demo.dto.SombraUser;
+import com.testmonkeys.demo.entity.User;
+import com.testmonkeys.demo.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -14,14 +16,23 @@ import java.util.List;
 @Service
 public class UserService {
 
-    public List<SombraUser> getUserFromJson() throws IOException {
+
+    @Autowired
+    private UserRepository userRepository;
+
+
+    public List<User> findAll(){
+       return userRepository.findAll();
+    }
+
+    public List<User> getUserFromJson() throws IOException {
         Gson gson = new Gson();
 
         String json = StreamUtils.copyToString(
                 new ClassPathResource("users.json").getInputStream(),
                 Charset.defaultCharset());
 
-        SombraUser[] arr = gson.fromJson(json, SombraUser[].class);
+        User[] arr = gson.fromJson(json, User[].class);
 
         return Arrays.asList(arr);
     }
