@@ -2,9 +2,8 @@ package com.testmonkeys.demo.entity;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -34,4 +33,7 @@ public class User {
     private String position;
     private String got_fired;
     private Integer sombra_money;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SkillMark> skillMark;
 }
