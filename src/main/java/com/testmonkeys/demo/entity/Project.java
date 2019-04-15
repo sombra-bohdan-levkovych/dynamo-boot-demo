@@ -9,6 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "project")
@@ -17,10 +19,10 @@ import java.time.LocalDateTime;
         "requests", "teamLead", "skillMarks", "technologies", "parentProjectFolder"})
 @ToString(callSuper = true, exclude = {"manager", "hrManager", "timeLogs", "userInProject",
         "requests", "teamLead", "skillMarks", "technologies", "parentProjectFolder"})
-public class Project {
+public class Project   {
 
     @Id
-    private Long id;
+    private Long Id;
 
     @NotNull(message = "Project title can't be empty")
     @Size(min = 1, max = 100, message = "Project title can't be empty or longer than 100 characters")
@@ -37,7 +39,6 @@ public class Project {
     @NotNull
     @Column(nullable = false)
     private boolean activated = true;
-
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -61,6 +62,13 @@ public class Project {
     @ManyToOne
     private User teamLead;
 
+    @ManyToMany(mappedBy = "project", fetch = FetchType.LAZY)
+    private List<SkillMark> skillMarks;
+
+    @JoinTable(name = "project_technologies", joinColumns = @JoinColumn(name = "project_id", referencedColumnName =
+            "id"), inverseJoinColumns = @JoinColumn(name = "technology_id", referencedColumnName = "id"))
+    @ManyToMany(cascade = CascadeType.MERGE)
+    private Set<Technology> technologies;
 
     @Column(name = "accessible_team_lead_for_temp_management", nullable = false)
     private boolean accessibleTeamLeadForTmpManagement = false;
