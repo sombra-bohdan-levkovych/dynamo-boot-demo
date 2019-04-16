@@ -11,5 +11,7 @@ public interface UserService {
 
     User getOne(Long id);
 
+    List<UserDTO> findAllActivatedBEMiddleDevs();
+
     UserDTO createUser(UserDTO userDTO);
  }
