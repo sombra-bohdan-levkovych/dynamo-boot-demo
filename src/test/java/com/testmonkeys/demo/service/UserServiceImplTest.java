@@ -54,7 +54,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void createUserTest(){
+    public void createUserTest__EmailInvalid() {
         final UserDTO userDTO = new UserDTO()
                 .setName("Ostap")
                 .setPosition("Java developer")
@@ -65,31 +65,44 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void createUserTest__EmailExists() {
+        final UserDTO userDTO = new UserDTO()
+                .setName("Ostap")
+                .setPosition("Java developer")
+                .setRank("Middle")
+                .setEmail("goodemail@gmail.com");
+        exceptionRule.expect(InternalError.class); //May be custom exceptions
+        when(userRepository.findByEmail(any())).thenReturn(new User());
+        userService.createUser(userDTO);
+    }
+
+    @Test
     public void findAllBEMiddleDevs() {
         final List<User> testUsersList = Arrays.asList(
                 new User()
-                .setId(1L).setFirstname("User1")
-                .setPosition("Middle Java developer")
-                .setActivated(true),
+                        .setId(1L).setFirstname("User1")
+                        .setPosition("Middle Java developer")
+                        .setActivated(true),
                 new User()
-                .setId(2L).setFirstname("User2")
-                .setPosition("Middle Java developer")
-                .setActivated(false),
+                        .setId(2L).setFirstname("User2")
+                        .setPosition("Middle Java developer")
+                        .setActivated(false),
                 new User()
-                .setId(3L).setFirstname("User3")
-                .setActivated(false),
+                        .setId(3L).setFirstname("User3")
+                        .setActivated(false),
                 new User()
-                .setId(4L)
-                .setPosition("Junior QA Manual")
-                .setActivated(false),
+                        .setId(4L)
+                        .setPosition("Junior QA Manual")
+                        .setActivated(false),
                 new User()
-                .setId(5L).setFirstname("User5")
-                .setPosition("Middle FE developer")
-                .setActivated(true), null,
+                        .setId(5L).setFirstname("User5")
+                        .setPosition("Middle FE developer")
+                        .setActivated(true),
+                null,
                 new User()
-                .setId(6L).setFirstname("User6")
-                .setPosition("Middle Java developer")
-                .setActivated(true));
+                        .setId(6L).setFirstname("User6")
+                        .setPosition("Middle Java developer")
+                        .setActivated(true));
         when(userRepository.findAll()).thenReturn(testUsersList);
         final List<UserDTO> users = userService.findAllActivatedBEMiddleDevs();
         assertNotNull(users);

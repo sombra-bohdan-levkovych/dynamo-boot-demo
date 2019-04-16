@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +23,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private final static String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])" +
-            "?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+    private final static Pattern emailPatter = Pattern.compile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
 
 //    @Autowired
 //    private UserMapper userMapper;
@@ -61,17 +61,19 @@ public class UserServiceImpl implements UserService {
         return this.toDTO(userRepository.save(user));
     }
 
-    private void validateUserDTO(UserDTO userDTO) {
+    private void validateUserDTO(final UserDTO userDTO) {
         final String email = Optional.ofNullable(userDTO)
                 .orElseThrow(() -> new IllegalArgumentException("User dto cannot be null"))
                 .getEmail();
         if (StringUtils.isNullOrEmpty(email)) {
             throw new IllegalArgumentException("Email cannot be blank or empty");
         }
-        if (!Matcher.match(email, EMAIL_REGEX, true)){
+        if (!emailPatter.matcher(email).find()) {
             throw new IllegalArgumentException("Email format is invalid!");
         }
-
+        if(Objects.nonNull(userRepository.findByEmail(email))){
+            throw new InternalError("Email already exists");
+        }
     }
 
     private UserDTO toDTO(final User user) {
