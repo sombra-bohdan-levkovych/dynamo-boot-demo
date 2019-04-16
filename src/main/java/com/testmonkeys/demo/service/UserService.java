@@ -1,5 +1,6 @@
 package com.testmonkeys.demo.service;
 
+import com.testmonkeys.demo.dto.AccountDTO;
 import com.testmonkeys.demo.dto.UserDTO;
 import com.testmonkeys.demo.entity.User;
 
@@ -14,4 +15,6 @@ public interface UserService {
     List<UserDTO> findAllActivatedBEMiddleDevs();
 
     UserDTO createUser(UserDTO userDTO);
+
+    UserDTO createNewUserByRecruiter(AccountDTO accountDTO);
  }

@@ -18,6 +18,19 @@
 		<java.version>1.8</java.version>
 		<org.projectlombok.version>1.18.2</org.projectlombok.version>
 	</properties>
+
+	<!--<dependencyManagement>-->
+		<!--<dependencies>-->
+			<!--<dependency>-->
+				<!--<groupId>org.springframework.data</groupId>-->
+				<!--<artifactId>spring-data-releasetrain</artifactId>-->
+				<!--<version>Hopper-SR10</version>-->
+				<!--<type>pom</type>-->
+				<!--<scope>import</scope>-->
+			<!--</dependency>-->
+		<!--</dependencies>-->
+	<!--</dependencyManagement>-->
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,11 +60,26 @@
 			<artifactId>gson</artifactId>
 			<version>2.8.5</version>
 		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.amazonaws</groupId>-->
+			<!--<artifactId>aws-java-sdk-dynamodb</artifactId>-->
+			<!--<version>1.11.34</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>com.github.derjust</groupId>-->
+			<!--<artifactId>spring-data-dynamodb</artifactId>-->
+			<!--<version>4.3.1</version>-->
+		<!--</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 			<version>2.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>5.1.5.RELEASE</version>
 		</dependency>
 	</dependencies>
 	<build>
