@@ -82,7 +82,7 @@ public class UserValidator {
     }
 
 
-    public void checkDatesValidity(LocalDate birthDay, LocalDate startsWork) {
+    public static void checkDatesValidity(LocalDate birthDay, LocalDate startsWork) {
         LocalDate minimumBirthDate = LocalDate.of(1900, 1, 1);
         if (birthDay.isBefore(minimumBirthDate)) {
             throw new RuntimeException("Can't set birthday before " + minimumBirthDate);
@@ -95,13 +95,13 @@ public class UserValidator {
         }
     }
 
-    public void checkEmailEquality(String one, String two) {
+    public static void checkEmailEquality(String one, String two) {
         if (one.equals(two)) {
             throw new RuntimeException("Emails can't be the same");
         }
     }
 
-    public void checkPhonesEquality(String one, String two) {
+    public static void checkPhonesEquality(String one, String two) {
         if (one.equals(two)) {
             throw new RuntimeException("Phones can't be the same");
         }
@@ -113,7 +113,7 @@ public class UserValidator {
         }
     }
 
-    public void checkRoles(List<String> roles) {
+    public static void checkRoles(List<String> roles) {
         if (roles.size() == 1 ) {
             throw new RuntimeException("Role can't be only additional.");
         }

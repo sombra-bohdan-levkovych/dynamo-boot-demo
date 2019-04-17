@@ -86,10 +86,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUser(AccountDTO user) {
-        userValidator.checkEmailEquality(user.getEmail(), user.getPersonalEmail());
-        userValidator.checkPhonesEquality(user.getPhoneOne(), user.getPhoneTwo());
-        userValidator.checkDatesValidity(user.getBirthDate(), user.getStartsWork());
-        userValidator.checkRoles(user.getRoles());
+        UserValidator.checkEmailEquality(user.getEmail(), user.getPersonalEmail());
+        UserValidator.checkPhonesEquality(user.getPhoneOne(), user.getPhoneTwo());
+        UserValidator.checkDatesValidity(user.getBirthDate(), user.getStartsWork());
+        UserValidator.checkRoles(user.getRoles());
 
         if ((!userValidator.checkEmailUser(user.getEmail(), user.getId()) || (!userValidator.checkEmailUser(user.getPersonalEmail(),
                 user.getId())))) {
