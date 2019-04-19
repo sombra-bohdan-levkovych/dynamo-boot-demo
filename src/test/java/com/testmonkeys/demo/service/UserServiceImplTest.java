@@ -1,12 +1,10 @@
 package com.testmonkeys.demo.service;
 
-import com.testmonkeys.demo.dto.AccountDTO;
 import com.testmonkeys.demo.dto.UserDTO;
 import com.testmonkeys.demo.entity.User;
 import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.mapper.UserMapper;
 import com.testmonkeys.demo.repo.UserRepository;
-import com.testmonkeys.demo.service.factory.AccountDTOTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -117,10 +115,10 @@ public class UserServiceImplTest {
 
     }
 
-
-    @Test
-    public void check(){
-        AccountDTO accountDTO = AccountDTOTestFactory.getRandomActiveUser();
-        userService.validateUser(accountDTO);
-    }
+//
+//    @Test
+//    public void check(){
+//        AccountDTO accountDTO = AccountDTOTestFactory.getRandomActiveUser();
+//        userService.validateUser(accountDTO);
+//    }
 }

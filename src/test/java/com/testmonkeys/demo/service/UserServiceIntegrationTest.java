@@ -4,26 +4,28 @@ import com.testmonkeys.demo.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceIntegrationTest {
 
-    @InjectMocks
+    @Autowired
     private UserServiceImpl repository;
 
 
     @Test
     public void getAllTest(){
-        List<User> all = repository.findAll();
+        final List<User> all = repository.findAll();
 
         assertNotNull(all);
+        assertEquals(182, all.size());
 
     }
 }
