@@ -123,7 +123,7 @@ public class AccountDTO {
                 .collect(Collectors.toList());
 
         if (nonNull(user.getPosition())) {
-            this.position = user.getPosition().getValue();
+            this.position = user.getPosition();
         }
         this.department = user.getDepartment().getTitle();
 

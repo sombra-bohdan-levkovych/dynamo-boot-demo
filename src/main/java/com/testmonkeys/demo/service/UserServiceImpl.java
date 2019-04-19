@@ -7,6 +7,7 @@ import com.testmonkeys.demo.entity.User;
 import com.testmonkeys.demo.entity.UserProject;
 import com.testmonkeys.demo.enums.Office;
 import com.testmonkeys.demo.enums.PositionEnum;
+import com.testmonkeys.demo.exception.BadRequestParametersException;
 import com.testmonkeys.demo.mapper.UserMapper;
 import com.testmonkeys.demo.repo.ProjectRepository;
 import com.testmonkeys.demo.repo.UserRepository;
@@ -27,6 +28,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.testmonkeys.demo.utils.UserValidator.checkAvatarForUser;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -67,7 +70,7 @@ public class UserServiceImpl implements UserService {
         final Predicate<User> middleJavaDeveloper = u -> Objects.nonNull(u)
                 && u.isActivated()
                 && Objects.nonNull(u.getPosition())
-                && u.getPosition().getValue().contains("Middle Java developer");
+                && u.getPosition().contains("Middle Java developer");
         return userRepository.findAll().stream()
                 .filter(middleJavaDeveloper)
                 .map(this::toDTO)
@@ -85,28 +88,27 @@ public class UserServiceImpl implements UserService {
         return this.toDTO(userRepository.save(user));
     }
 
-    private void validateUser(AccountDTO user) {
+    public void validateUser(AccountDTO user) {
         UserValidator.checkEmailEquality(user.getEmail(), user.getPersonalEmail());
         UserValidator.checkPhonesEquality(user.getPhoneOne(), user.getPhoneTwo());
         UserValidator.checkDatesValidity(user.getBirthDate(), user.getStartsWork());
         UserValidator.checkRoles(user.getRoles());
 
-        if ((!userValidator.checkEmailUser(user.getEmail(), user.getId()) || (!userValidator.checkEmailUser(user.getPersonalEmail(),
-                user.getId())))) {
-            throw new RuntimeException("Email is already in use");
+        if ((!userValidator.checkEmailUser(user.getEmail(), user.getId()) || (!userValidator.checkEmailUser(user.getPersonalEmail(),user.getId())))) {
+            throw new BadRequestParametersException("Email is already in use");
         }
 
-        if ((!userValidator.checkPhoneUser(user.getPhoneOne(), user.getId()) || (!userValidator.checkPhoneUser(user.getPhoneTwo(),
-                user.getId())))) {
-            throw new RuntimeException("Phone is already in use");
+        if ((!userValidator.checkPhoneUser(user.getPhoneOne(), user.getId())
+                || (!userValidator.checkPhoneUser(user.getPhoneTwo(),user.getId())))) {
+            throw new BadRequestParametersException("Phone is already in use");
         }
 
         if ((!userValidator.checkSkypeUser(user.getSkype(), user.getId()))) {
-            throw new RuntimeException("Skype is already in use");
+            throw new BadRequestParametersException("Skype is already in use");
         }
 
         if ((!userValidator.checkUniquenessOfHeadsOfOfficeAdministrations(user.getEmail(), user.getPosition(), user.getOffice()))) {
-            throw new RuntimeException("Position is already occupied");
+            throw new BadRequestParametersException("Position is already occupied");
         }
     }
 
@@ -115,10 +117,11 @@ public class UserServiceImpl implements UserService {
     public UserDTO createNewUserByRecruiter(@Valid AccountDTO accountDTO) {
 
         validateUser(accountDTO);
-        userValidator.checkAvatarForUser(accountDTO.getBase64Avatar());
+        checkAvatarForUser(accountDTO.getBase64Avatar());
         User mainManger = null;
         User hr = null;
         if (!accountDTO.getRoles().contains(RoleType.ROLE_TOP_MANAGER.getValue())) {
+
             mainManger = userRepository
                     .findOneByEmail(accountDTO.getManagerEmail())
                     .orElseThrow(() -> new RuntimeException("User with email" + accountDTO.getManagerEmail() + "does not exists"));
@@ -127,6 +130,7 @@ public class UserServiceImpl implements UserService {
                         .findOneByEmail(accountDTO.getHrEmail())
                         .orElseThrow(() -> new RuntimeException("No Hr with this email"));
             }
+
         }
         User mentor = userRepository.findByEmail(accountDTO.getMentorEmail());
         User user = new User()
@@ -175,7 +179,7 @@ public class UserServiceImpl implements UserService {
     private UserDTO toDTO(final User user) {
         final String position = Optional.ofNullable(user)
                 .orElseThrow(() -> new IllegalArgumentException("User cannot be null at the mapper"))
-                .getPosition().getValue();
+                .getPosition();
         final String rank = position.substring(0, position.indexOf(" "));
         return new UserDTO()
                 .setId(user.getId())
@@ -211,7 +215,7 @@ public class UserServiceImpl implements UserService {
     private User fromDTO(UserDTO userDTO) {
         return new User().setId(userDTO.getId())
                 .setFirstname(userDTO.getFirstname())
-                .setPosition(PositionEnum.findByPosition(userDTO.getPosition()));
+                .setPosition(PositionEnum.findByPosition(userDTO.getPosition()).getValue());
     }
 
 }

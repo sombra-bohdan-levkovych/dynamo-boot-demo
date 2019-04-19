@@ -1,7 +1,6 @@
 package com.testmonkeys.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.utils.Constants;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -112,7 +111,7 @@ public class User {
 
 
     @Column(name = "position")
-    private PositionEnum position;
+    private String position;
 
 
     private String got_fired;
@@ -121,19 +120,23 @@ public class User {
     private Integer sombraMoney;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<SkillMark> skillMark;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    @JsonIgnore
     private List<Role> roles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", nullable = false)
+    @JsonIgnore
     private ProjectFolder department;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLanguage> languages;
 
@@ -149,7 +152,7 @@ public class User {
     @JsonIgnore
     private User mainManager;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<UserProject> projectsForUser;
 }

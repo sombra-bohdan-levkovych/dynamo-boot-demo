@@ -107,7 +107,7 @@ public class UserValidator {
         }
     }
 
-    public void checkAvatarForUser(String base64Avatar) {
+    public static void checkAvatarForUser(String base64Avatar) {
         if (Objects.isNull(base64Avatar)) {
             throw new RuntimeException("Set image for the(a) user");
         }

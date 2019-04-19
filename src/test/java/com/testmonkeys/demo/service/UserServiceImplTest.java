@@ -1,10 +1,12 @@
 package com.testmonkeys.demo.service;
 
+import com.testmonkeys.demo.dto.AccountDTO;
 import com.testmonkeys.demo.dto.UserDTO;
 import com.testmonkeys.demo.entity.User;
 import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.mapper.UserMapper;
 import com.testmonkeys.demo.repo.UserRepository;
+import com.testmonkeys.demo.service.factory.AccountDTOTestFactory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,11 +82,11 @@ public class UserServiceImplTest {
         final List<User> testUsersList = Arrays.asList(
                 new User()
                         .setId(1L).setFirstname("User1")
-                        .setPosition(PositionEnum.findByPosition("Middle Java developer"))
+                        .setPosition(PositionEnum.findByPosition("Middle Java developer").getValue())
                         .setActivated(true),
                 new User()
                         .setId(2L).setFirstname("User2")
-                        .setPosition(PositionEnum.findByPosition("Middle Java developer"))
+                        .setPosition(PositionEnum.findByPosition("Middle Java developer").getValue())
                         .setActivated(false),
                 new User()
                         .setFirstname("Chicken")
@@ -93,16 +94,16 @@ public class UserServiceImplTest {
                         .setActivated(false),
                 new User()
                         .setId(4L).setFirstname("Bandit")
-                        .setPosition(PositionEnum.findByPosition("Junior QA Manual"))
+                        .setPosition(PositionEnum.findByPosition("Junior QA Manual").getValue())
                         .setActivated(false),
                 new User()
                         .setId(5L).setFirstname("User5")
-                        .setPosition(PositionEnum.findByPosition("Middle Front-end developer"))
+                        .setPosition(PositionEnum.findByPosition("Middle Front-end developer").getValue())
                         .setActivated(true),
                 null,
                 new User()
                         .setId(6L).setFirstname("User6")
-                        .setPosition(PositionEnum.findByPosition("Middle Java developer"))
+                        .setPosition(PositionEnum.findByPosition("Middle Java developer").getValue())
                         .setActivated(true));
         when(userRepository.findAll()).thenReturn(testUsersList);
         final List<UserDTO> users = userService.findAllActivatedBEMiddleDevs();
@@ -114,5 +115,12 @@ public class UserServiceImplTest {
 //        }
         assertEquals(2, users.size());
 
+    }
+
+
+    @Test
+    public void check(){
+        AccountDTO accountDTO = AccountDTOTestFactory.getRandomActiveUser();
+        userService.validateUser(accountDTO);
     }
 }
