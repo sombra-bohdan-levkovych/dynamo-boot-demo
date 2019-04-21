@@ -1,7 +1,6 @@
 package com.testmonkeys.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.testmonkeys.demo.entity.Role;
 import com.testmonkeys.demo.entity.User;
 import com.testmonkeys.demo.utils.Constants;
 import lombok.Data;
@@ -14,9 +13,8 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.Objects.nonNull;
+import static com.testmonkeys.demo.utils.UserValidator.formatPhoneNumber;
 
 @Data
 @ToString(doNotUseGetters = true, exclude = {"base64Avatar"})
@@ -104,34 +102,18 @@ public class AccountDTO {
     public AccountDTO() {
     }
 
-    public AccountDTO(User user) {
-        this.id = user.getId();
-        this.firstname = user.getFirstname();
-        this.lastname = user.getLastname();
-        this.email = user.getEmail();
-        this.personalEmail = user.getPersonalEmail();
-        this.phoneOne = user.getPhoneOne();
-        this.phoneTwo = user.getPhoneTwo();
-        this.skype = user.getSkype();
 
-        this.office = user.getOffice();
-        this.activated = user.isActivated();
-        this.langKey = user.getLangKey();
-        this.roles = user.getRoles()
-                .stream()
-                .map(Role::getAuthority)
-                .collect(Collectors.toList());
 
-        if (nonNull(user.getPosition())) {
-            this.position = user.getPosition();
-        }
-        this.department = user.getDepartment().getTitle();
-
-        if (nonNull(user.getLanguages())) {
-            this.languages = user.getLanguages()
-                    .stream()
-                    .map(UserLanguageDTO::create)
-                    .collect(Collectors.toList());
-        }
+    public static User createUser(AccountDTO accountDTO){
+        return new User()
+                .setFirstname(accountDTO.getFirstname())
+                .setLastname(accountDTO.getLastname())
+                .setPersonalEmail(accountDTO.getPersonalEmail())
+                .setEmail(accountDTO.getEmail())
+                .setBirthDate(accountDTO.getBirthDate())
+                .setPhoneOne(formatPhoneNumber(accountDTO.getPhoneOne()))
+                .setPhoneTwo(accountDTO.getPhoneTwo() == null ? null : formatPhoneNumber(accountDTO.getPhoneTwo()))
+                .setSkype(accountDTO.getSkype())
+                .setActivated(true);
     }
 }

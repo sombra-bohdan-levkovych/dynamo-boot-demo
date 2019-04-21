@@ -1,6 +1,8 @@
 package com.testmonkeys.demo.utils;
 
+import com.testmonkeys.demo.dto.AccountDTO;
 import com.testmonkeys.demo.entity.User;
+import com.testmonkeys.demo.enums.Office;
 import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,12 @@ public class UserValidator {
 
     @Autowired
     private UserRepository userRepository;
+
+    public static void checkAndValidateOffice(User user, AccountDTO accountDTO){
+        if (Office.isOfficeExist(accountDTO.getOffice())) {
+            user.setOffice(accountDTO.getOffice().toUpperCase());
+        }
+    }
 
     public boolean checkEmailUser(String email, Long userId) {
         List<User> existingUsers = userRepository.findAllByEmailOrPersonalEmail(email);
@@ -67,18 +75,14 @@ public class UserValidator {
         final Optional<User> user = userRepository.findOneByEmail(email);
         if (user.isPresent()
                 && user.get().getOffice().equals(office)
-                && (user.get().getPosition().equals(PositionEnum.HEAD_OF_OFFICE_ADMIN) || user.get().getPosition().equals(PositionEnum.HEAD_OF_SYS_ADMIN))) {
+                && (user.get().getPosition().equals(PositionEnum.HEAD_OF_OFFICE_ADMIN.getValue()) || user.get().getPosition().equals(PositionEnum.HEAD_OF_SYS_ADMIN.getValue()))) {
             return true;
         }
-        boolean isPositionFree = true;
         PositionEnum positionEnum = PositionEnum.findByPosition(position);
         if ((positionEnum.equals(PositionEnum.HEAD_OF_SYS_ADMIN) || positionEnum.equals(PositionEnum.HEAD_OF_OFFICE_ADMIN))) {
-            User userByPositionAndOffice = userRepository.findOneByPositionAndOffice(positionEnum, office);
-            if (userByPositionAndOffice != null) {
-                isPositionFree = false;
-            }
+            return false;
         }
-        return isPositionFree;
+        return true;
     }
 
 
@@ -119,7 +123,9 @@ public class UserValidator {
         }
     }
 
-
+    public static String formatPhoneNumber(String phoneNumber) {
+        return new StringBuilder(phoneNumber).insert(3, " ").insert(7, " ").insert(10, " ").toString();
+    }
 
 
 }

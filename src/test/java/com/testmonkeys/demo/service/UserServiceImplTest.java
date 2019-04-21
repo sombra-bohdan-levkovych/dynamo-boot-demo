@@ -1,10 +1,15 @@
 package com.testmonkeys.demo.service;
 
 import com.testmonkeys.demo.dto.UserDTO;
+import com.testmonkeys.demo.entity.Project;
 import com.testmonkeys.demo.entity.User;
+import com.testmonkeys.demo.entity.UserProject;
 import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.mapper.UserMapper;
+import com.testmonkeys.demo.repo.ProjectRepository;
 import com.testmonkeys.demo.repo.UserRepository;
+import com.testmonkeys.demo.service.factory.UserTestFactory;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -14,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +42,9 @@ public class UserServiceImplTest {
 
     @InjectMocks
     private UserMapper userMapper; //TODO
+
+    @Mock
+    private ProjectRepository projectRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -121,4 +130,66 @@ public class UserServiceImplTest {
 //        AccountDTO accountDTO = AccountDTOTestFactory.getRandomActiveUser();
 //        userService.validateUser(accountDTO);
 //    }
+
+
+    @Test
+    public void getNullUserProjectTest(){
+        User user = UserTestFactory.getRandomActiveUser();
+        Long projectId = 12l;
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+        UserProject userProject = userService.getUserProject(user, projectId);
+        Assert.assertNull(userProject);
+
+    }
+
+
+    @Test
+    public void getUserProjectTest(){
+        User user = UserTestFactory.getRandomActiveUser();
+        Long projectId = 1L;
+        Project project = new Project();
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        UserProject userProject = userService.getUserProject(user, projectId);
+        Assert.assertEquals(userProject.getUser(), user);
+        Assert.assertEquals(userProject.getProject(), project);
+        Assert.assertTrue(userProject.getStartWork().isAfter(LocalDateTime.now().minusSeconds(40)));
+        Assert.assertTrue(userProject.getStartWork().isBefore(LocalDateTime.now()));
+    }
+
+
+    @Test
+    public void setUserProjectTest(){
+        User user = UserTestFactory.getRandomActiveUser();
+
+        List<Long> projectId = Arrays.asList(1L, 2L, 3L, 4L);
+
+        Project project1 = new Project();
+        project1.setId(1L);
+        Project project2 = new Project();
+        project2.setId(2L);
+        Project project3 = new Project();
+        project3.setId(3L);
+        Project project4 = new Project();
+        project4.setId(4L);
+
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project1));
+        when(projectRepository.findById(2L)).thenReturn(Optional.of(project2));
+        when(projectRepository.findById(3L)).thenReturn(Optional.of(project3));
+        when(projectRepository.findById(4L)).thenReturn(Optional.of(project4));
+
+        userService.setProjectsToUser(user, projectId);
+        Assert.assertNotNull(user.getProjectsForUser());
+
+
+        Assert.assertEquals(user.getProjectsForUser().size(), 4);
+
+
+    }
+
+
+
+
+
+
+
 }

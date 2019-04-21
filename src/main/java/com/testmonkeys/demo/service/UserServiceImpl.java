@@ -5,10 +5,10 @@ import com.testmonkeys.demo.dto.AccountDTO;
 import com.testmonkeys.demo.dto.UserDTO;
 import com.testmonkeys.demo.entity.User;
 import com.testmonkeys.demo.entity.UserProject;
-import com.testmonkeys.demo.enums.Office;
 import com.testmonkeys.demo.enums.PositionEnum;
 import com.testmonkeys.demo.exception.BadRequestParametersException;
 import com.testmonkeys.demo.mapper.UserMapper;
+import com.testmonkeys.demo.repo.ProjectFolderRepository;
 import com.testmonkeys.demo.repo.ProjectRepository;
 import com.testmonkeys.demo.repo.UserRepository;
 import com.testmonkeys.demo.utils.Logger;
@@ -50,6 +50,10 @@ public class UserServiceImpl implements UserService {
     @Value("18")
     private Integer vacationDaysFromStart;
 
+    @Autowired
+    private ProjectFolderRepository projectFolderRepository;
+
+
     private final static Pattern emailPatter = Pattern.compile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$");
 
     @Override
@@ -73,7 +77,7 @@ public class UserServiceImpl implements UserService {
                 && u.getPosition().contains("Middle Java developer");
         return userRepository.findAll().stream()
                 .filter(middleJavaDeveloper)
-                .map(this::toDTO)
+                .map(UserMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -84,8 +88,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO createUser(final UserDTO userDTO) {
         validateUserDTO(userDTO);
-        final User user = this.fromDTO(userDTO);
-        return this.toDTO(userRepository.save(user));
+        final User user = UserMapper.fromDTO(userDTO);
+        return UserMapper.toDTO(userRepository.save(user));
     }
 
     public void validateUser(AccountDTO user) {
@@ -106,22 +110,16 @@ public class UserServiceImpl implements UserService {
         if ((!userValidator.checkSkypeUser(user.getSkype(), user.getId()))) {
             throw new BadRequestParametersException("Skype is already in use");
         }
-
-        if ((!userValidator.checkUniquenessOfHeadsOfOfficeAdministrations(user.getEmail(), user.getPosition(), user.getOffice()))) {
-            throw new BadRequestParametersException("Position is already occupied");
-        }
     }
 
     @Override
     @Transactional
     public UserDTO createNewUserByRecruiter(@Valid AccountDTO accountDTO) {
-
         validateUser(accountDTO);
         checkAvatarForUser(accountDTO.getBase64Avatar());
         User mainManger = null;
         User hr = null;
         if (!accountDTO.getRoles().contains(RoleType.ROLE_TOP_MANAGER.getValue())) {
-
             mainManger = userRepository
                     .findOneByEmail(accountDTO.getManagerEmail())
                     .orElseThrow(() -> new RuntimeException("User with email" + accountDTO.getManagerEmail() + "does not exists"));
@@ -130,36 +128,29 @@ public class UserServiceImpl implements UserService {
                         .findOneByEmail(accountDTO.getHrEmail())
                         .orElseThrow(() -> new RuntimeException("No Hr with this email"));
             }
-
         }
         User mentor = userRepository.findByEmail(accountDTO.getMentorEmail());
-        User user = new User()
-                .setFirstname(accountDTO.getFirstname())
-                .setLastname(accountDTO.getLastname())
-                .setPersonalEmail(accountDTO.getPersonalEmail())
-                .setEmail(accountDTO.getEmail())
-                .setPhoneOne(formatePhoneNumber(accountDTO.getPhoneOne()))
-                .setPhoneTwo(accountDTO.getPhoneTwo() == null ? null : formatePhoneNumber(accountDTO.getPhoneTwo()))
-                .setSkype(accountDTO.getSkype())
-                .setMentor(mentor)
-                .setMyHR(hr)
-                .setMainManager(mainManger)
-                .setActivated(true)
-                .setPassword(passwordEncoder.encode("sombra"))
-                .setVacationDays(vacationDaysFromStart);
-
-        if (Office.isOfficeExist(accountDTO.getOffice())) {
-            user.setOffice(accountDTO.getOffice().toUpperCase());
-        }
-
-
-
+        User user = createFromAccountDTO(accountDTO, mentor, hr, mainManger);
+        UserValidator.checkAndValidateOffice(user, accountDTO);
         setProjectsToUser(user, accountDTO.getProjectsId());
         userRepository.save(user);
 
         Logger.info("id = {}", user.getId());
-        return userMapper.toDTO(user);
+        return UserMapper.toDTO(user);
     }
+
+    public User createFromAccountDTO(AccountDTO accountDTO, User mentor, User hr, User mainManger) {
+        User user = AccountDTO.createUser(accountDTO);
+        user.setMyHR(hr);
+        user.setMentor(mentor);
+        user.setMainManager(mainManger);
+        user.setPosition(accountDTO.getPosition());
+        user.setDepartment(projectFolderRepository.findFirstById(1l));
+        user.setPassword(passwordEncoder.encode("sombra"));
+        user.setVacationDays(vacationDaysFromStart);
+        return user;
+    }
+
 
     private void validateUserDTO(final UserDTO userDTO) {
         final String email = Optional.ofNullable(userDTO)
@@ -176,22 +167,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private UserDTO toDTO(final User user) {
-        final String position = Optional.ofNullable(user)
-                .orElseThrow(() -> new IllegalArgumentException("User cannot be null at the mapper"))
-                .getPosition();
-        final String rank = position.substring(0, position.indexOf(" "));
-        return new UserDTO()
-                .setId(user.getId())
-                .setPosition(position.substring(position.indexOf(" ") + 1));
-    }
 
 
-    private String formatePhoneNumber(String phoneNumber) {
-        return new StringBuilder(phoneNumber).insert(3, " ").insert(7, " ").insert(10, " ").toString();
-    }
 
-    private void setProjectsToUser(User user, List<Long> projectsId) {
+
+
+    public void setProjectsToUser(User user, List<Long> projectsId) {
         if (Objects.nonNull(projectsId)) {
             final List<UserProject> userProjects = projectsId.stream()
                     .map(projectId -> getUserProject(user, projectId))
@@ -202,7 +183,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private UserProject getUserProject(final User user, final Long projectId) {
+    public UserProject getUserProject(final User user, final Long projectId) {
         return projectRepository.findById(projectId)
                 .map(project ->
                         new UserProject()
@@ -212,10 +193,6 @@ public class UserServiceImpl implements UserService {
                 .orElse(null);
     }
 
-    private User fromDTO(UserDTO userDTO) {
-        return new User().setId(userDTO.getId())
-                .setFirstname(userDTO.getFirstname())
-                .setPosition(PositionEnum.findByPosition(userDTO.getPosition()).getValue());
-    }
+
 
 }

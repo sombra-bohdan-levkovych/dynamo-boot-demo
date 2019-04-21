@@ -19,6 +19,7 @@ import java.util.List;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonIgnore
@@ -132,7 +133,7 @@ public class User {
     private List<Role> roles;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id", nullable = false)
+    @JoinColumn(name = "department_id")
     @JsonIgnore
     private ProjectFolder department;
 
